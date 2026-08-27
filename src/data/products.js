@@ -1,5 +1,5 @@
 const products = [
-  {
+  {  
     id: 1,
     name: "Wireless Headphones",
     price: 99.99,
