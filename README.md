@@ -91,9 +91,6 @@ Since there's no server, "accounts" are just entries in `localStorage`:
 
 This is a demo pattern only — passwords are stored in plain text and there's no real security. It's meant to showcase frontend logic, not to be production-ready auth.
 
-## Screenshots
-
-_Add a few screenshots here — home page, product details, cart, and checkout confirmation work well._
 
 ## Author
 
