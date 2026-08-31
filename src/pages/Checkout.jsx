@@ -1,19 +1,64 @@
-import { useCart }  from "../context/CartContext";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useCart } from "../context/CartContext";
+import { useOrders } from "../context/OrderContext";
 
 export default function Checkout() {
     const {getCartItemsWithProducts, updateQuantity, removeFromCart, getCartTotal, clearCart} = useCart();
+    const { addOrder } = useOrders();
     const cartItems = getCartItemsWithProducts();
 
     const total = getCartTotal();
 
+    const [orderPlaced, setOrderPlaced] = useState(false);
+    const [emptyCartError, setEmptyCartError] = useState(false);
+
     function placeOrder() {
-        alert("Successful Order!")
-        clearCart()
+        if (cartItems.length === 0) {
+            setEmptyCartError(true);
+            return;
+        }
+
+        setEmptyCartError(false);
+        addOrder(cartItems, total);
+        clearCart();
+        setOrderPlaced(true);
     }
+
+    if (orderPlaced) {
+        return (
+            <div className="page">
+                <div className="container">
+                    <div className="order-success">
+                        <h1 className="order-success-title">Order Placed!</h1>
+                        <p className="order-success-message">
+                            Thanks for shopping with EniKicks — your order is on its way.
+                        </p>
+                        <div style={{ marginTop: "2rem", display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap" }}>
+                            <Link to="/" className="btn btn-primary btn-large">
+                                Continue Shopping
+                            </Link>
+                            <Link to="/orders" className="btn btn-secondary btn-large">
+                                View Order History
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
     <div className="page">
         <div className="container">
             <h1 className="page-title">Checkout</h1>
+
+            {emptyCartError && (
+                <div className="error-message">
+                    Your cart is empty — add something before placing an order.
+                </div>
+            )}
+
             <div className="checkout-container">
              <div className="checkout-items">
                 <h2 className="checkout-section-title">Order Summary</h2>

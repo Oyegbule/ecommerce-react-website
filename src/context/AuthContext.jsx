@@ -8,17 +8,15 @@ export default function AuthProvider({ children }) {
     function signUp(email, password) {
         const users = JSON.parse(localStorage.getItem('users') || "[]");
 
-
         if (users.find(u => u.email === email)) {
             return { success: false, error: "Email already exists"};
         }
         const newUser = {email, password};
         users.push(newUser);
         localStorage.setItem("users", JSON.stringify(users));
-        localStorage.setItem("currentUserEmail", email);
 
-        setUser({ email });
-
+        // no auto-login here — signUp only registers the account.
+        // the user is sent to the login screen next (handled in Auth.jsx)
         return { success: true };
     }
 

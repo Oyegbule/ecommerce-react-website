@@ -6,29 +6,47 @@ import { useNavigate } from "react-router-dom";
 export default function Auth() {
     const [mode, setMode] = useState("signup");
     const [error, setError] = useState(null);
+    const [notice, setNotice] = useState(null);
 
     const navigate = useNavigate()
 
     const { signUp, login } = useAuth();
 
-    const {register, handleSubmit, formState: { errors }} = useForm();
+    const {register, handleSubmit, formState: { errors }, reset} = useForm();
 
     function onSubmit(data) {
-        setError(null)
-        let result;
+        setError(null);
+
         if (mode === "signup") {
-            result = signUp(data.email, data.password);
-        } else {
-            result = login(data.email, data.password);
+            const result = signUp(data.email, data.password);
+
+            if (result.success) {
+                // account created — send them to the login screen next,
+                // don't log them in automatically
+                setMode("login");
+                setNotice("Account created! Please log in.");
+                reset();
+            } else {
+                setError(result.error);
+            }
+            return;
         }
 
+        const result = login(data.email, data.password);
+
         if (result.success) {
-            navigate("/")
+            navigate("/");
         } else {
-            setError(result.error)
+            setError(result.error);
         }
-        }
-        
+    }
+
+    function switchMode(nextMode) {
+        setError(null);
+        setNotice(null);
+        setMode(nextMode);
+    }
+
     return (
     <div className="page">
         <div className="container">
@@ -36,6 +54,7 @@ export default function Auth() {
                 <h1 className="page-title">{mode === "signup" ? "Sign Up" : "Login"}</h1>
                 <form className="auth-form" onSubmit={handleSubmit(onSubmit)}>
 
+                    {notice && <div className="success-message">{notice}</div>}
                     {error && <div className="error-message">{error}</div>}
                    <div className="form-group">
                     <label className="form-label" htmlFor="email">Email</label>
@@ -55,13 +74,13 @@ export default function Auth() {
                     {mode === "signup" ? (
                         <p>
                             Already have an account?{" "}
-                            <span className="auth-link" onClick={() => setMode("login")}>Login</span>
+                            <span className="auth-link" onClick={() => switchMode("login")}>Login</span>
                             </p>
                     ) : (
                         <p>
                             {" "}
                             Don't have an account?{" "}
-                            <span className="auth-link" onClick={() => setMode("signup")}>Sign Up</span>
+                            <span className="auth-link" onClick={() => switchMode("signup")}>Sign Up</span>
                             </p>
                     )}
                     
